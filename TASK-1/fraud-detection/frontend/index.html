@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="An advanced, real-time machine learning interface to predict credit card transaction fraud using Random Forest classifier and standard scaling."/>
+  <title>Credit Card Fraud Intelligent Detector</title>
+  
+  <!-- Import Outfit and Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-base: #060913;
+      --card-bg: rgba(13, 20, 38, 0.45);
+      --card-border: rgba(255, 255, 255, 0.07);
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --accent-legit: #10b981;
+      --accent-legit-bg: rgba(16, 185, 129, 0.12);
+      --accent-fraud: #ef4444;
+      --accent-fraud-bg: rgba(239, 68, 68, 0.12);
+      --input-bg: rgba(7, 10, 22, 0.8);
+      --glow-cyan: rgba(6, 182, 212, 0.15);
+      --glow-indigo: rgba(99, 102, 241, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-base);
+      background-image: 
+        radial-gradient(circle at 15% 20%, var(--glow-indigo) 0%, transparent 45%),
+        radial-gradient(circle at 85% 75%, var(--glow-cyan) 0%, transparent 45%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 15px;
+      overflow-x: hidden;
+    }
+
+    /* Container Header */
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #a5b4fc 0%, #6366f1 50%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      font-weight: 400;
+    }
+
+    /* Main Grid Layout */
+    .dashboard-container {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 24px;
+      width: 100%;
+      max-width: 1200px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 968px) {
+      .dashboard-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Card Panels */
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card:hover {
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .card-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding-bottom: 12px;
+    }
+
+    .card h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-main);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card h2 span {
+      color: var(--primary);
+    }
+
+    /* Form Sample Buttons inside Header */
+    .sample-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-sample {
+      padding: 6px 12px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.2s;
+    }
+
+    .btn-sample.legit {
+      background: rgba(16, 185, 129, 0.1);
+      color: #34d399;
+    }
+
+    .btn-sample.legit:hover {
+      background: rgba(16, 185, 129, 0.2);
+    }
+
+    .btn-sample.fraud {
+      background: rgba(239, 68, 68, 0.1);
+      color: #f87171;
+    }
+
+    .btn-sample.fraud:hover {
+      background: rgba(239, 68, 68, 0.2);
+    }
+
+    /* Scrollable features grid container */
+    .features-section {
+      margin-bottom: 20px;
+    }
+
+    .features-section-title {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      letter-spacing: 0.04em;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    /* Form Fields */
+    .field {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .field label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+
+    .field input {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 8px 10px;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.85rem;
+      outline: none;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .field input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+      background: rgba(7, 10, 22, 1);
+    }
+
+    .amount-wrapper {
+      max-width: 250px;
+      margin-top: 10px;
+    }
+
+    /* Buttons Container */
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 15px;
+    }
+
+    .btn {
+      flex: 2;
+      padding: 12px;
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+      transition: all 0.2s;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+      background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn.sec {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      box-shadow: none;
+    }
+
+    .btn.sec:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    /* Results Dashboard Column (Right Side) */
+    .results-panel {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 380px;
+    }
+
+    .standby-state {
+      text-align: center;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-dim);
+    }
+
+    .standby-icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      opacity: 0.4;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .standby-text {
+      font-size: 0.95rem;
+      max-width: 250px;
+      line-height: 1.5;
+    }
+
+    .active-state {
+      display: none;
+      width: 100%;
+      text-align: center;
+    }
+
+    /* Result Banners */
+    .result-badge {
+      display: inline-block;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    .result-badge.legit {
+      background: var(--accent-legit-bg);
+      color: var(--accent-legit);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+    }
+
+    .result-badge.fraud {
+      background: var(--accent-fraud-bg);
+      color: var(--accent-fraud);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.15);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+      70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+
+    /* SVG Progress Ring */
+    .gauge-wrapper {
+      position: relative;
+      width: 160px;
+      height: 160px;
+      margin: 0 auto 20px;
+    }
+
+    .progress-ring {
+      transform: rotate(-90deg);
+    }
+
+    .progress-ring__circle {
+      transition: stroke-dashoffset 0.8s ease-in-out, stroke 0.3s;
+    }
+
+    .gauge-value {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .gauge-percentage {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .gauge-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Linear Confidence indicator */
+    .confidence-wrapper {
+      width: 100%;
+      max-width: 280px;
+      margin: 0 auto 20px;
+      text-align: left;
+    }
+
+    .confidence-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .confidence-value {
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #6366f1, #3b82f6);
+      border-radius: 4px;
+      transition: width 0.8s cubic-bezier(0.1, 0.8, 0.25, 1);
+    }
+
+    /* Extra Info Cards */
+    .metrics-details {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 12px;
+      padding: 14px;
+      text-align: left;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      width: 100%;
+      max-width: 320px;
+      margin: 0 auto;
+    }
+
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .metric-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .metric-label {
+      color: var(--text-muted);
+    }
+
+    .metric-val {
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    /* Error Box */
+    .err-box {
+      background: var(--accent-fraud-bg);
+      border: 1px solid var(--accent-fraud);
+      border-radius: 10px;
+      padding: 12px 16px;
+      color: #fca5a5;
+      font-size: 0.85rem;
+      margin-top: 15px;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      animation: shake 0.4s ease;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
+
+    /* Loader */
+    .loader-overlay {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(6, 9, 19, 0.85);
+      border-radius: 20px;
+      z-index: 10;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+
+    .spinner {
+      width: 45px;
+      height: 45px;
+      border: 3.5px stroke rgba(255, 255, 255, 0.05);
+      border-top: 3.5px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 12px;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    /* History section */
+    .history-card {
+      width: 100%;
+      max-width: 1200px;
+      margin-top: 10px;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      margin-top: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      text-align: left;
+    }
+
+    th {
+      color: var(--text-dim);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text-muted);
+      transition: background 0.2s;
+    }
+
+    tr.clickable-row {
+      cursor: pointer;
+    }
+
+    tr.clickable-row:hover td {
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--text-main);
+    }
+
+    .badge-tbl {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge-tbl.legit {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+    }
+
+    .badge-tbl.fraud {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+    }
+
+    .empty-history {
+      padding: 24px;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+    }
+
+    /* Footer Note */
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.75rem;
+      line-height: 1.6;
+      max-width: 600px;
+    }
+
+    footer code {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 2px 5px;
+      border-radius: 4px;
+      color: var(--text-muted);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🔍 Fraud Intelligent Detector</h1>
+    <p class="subtitle">Real-time Machine Learning Classifier — PCA Transaction Feature Analysis</p>
+  </header>
+
+  <div class="dashboard-container">
+    
+    <!-- Left Column: Input Form -->
+    <div class="card" style="position: relative;">
+      
+      <!-- Loading overlay -->
+      <div class="loader-overlay" id="loader">
+        <div class="spinner"></div>
+        <p style="font-weight: 500; font-size: 0.9rem;">Running Random Forest Classifier...</p>
+      </div>
+
+      <div class="card-header-row">
+        <h2><span>⚙️</span> Transaction Parameters</h2>
+        <div class="sample-buttons">
+          <button class="btn-sample legit" onclick="fillSample(0)">+ Legit Sample</button>
+          <button class="btn-sample fraud" onclick="fillSample(1)">+ Fraud Sample</button>
+        </div>
+      </div>
+
+      <div class="features-section">
+        <div class="features-section-title">Anonymized Components (V1 – V14)</div>
+        <div class="grid" id="grid1"></div>
+
+        <div class="features-section-title" style="margin-top: 15px;">Anonymized Components (V15 – V28)</div>
+        <div class="grid" id="grid2"></div>
+
+        <div class="features-section-title" style="margin-top: 15px;">Transaction Valuation</div>
+        <div class="amount-wrapper">
+          <div class="field">
+            <label>Amount (USD)</label>
+            <input type="number" id="amount" placeholder="e.g. 149.62" step="0.01"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn" onclick="predict()">Analyze Transaction</button>
+        <button class="btn sec" onclick="clearAll()">Clear</button>
+      </div>
+      
+      <div class="err-box" id="errBox"></div>
+    </div>
+
+    <!-- Right Column: Visual Result Dashboard -->
+    <div class="card results-panel" id="resultsPanel">
+      
+      <!-- Standby state -->
+      <div class="standby-state" id="standbyState">
+        <div class="standby-icon">🛡️</div>
+        <div class="standby-text">Enter transaction features and run analysis to display security assessment dashboard.</div>
+      </div>
+
+      <!-- Active output details -->
+      <div class="active-state" id="activeState">
+        <div class="result-badge" id="resLabel"></div>
+        
+        <div class="gauge-wrapper">
+          <svg class="progress-ring" width="160" height="160">
+            <!-- SVG defs for gradients -->
+            <defs>
+              <linearGradient id="legitGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#10b981" />
+                <stop offset="100%" stop-color="#34d399" />
+              </linearGradient>
+              <linearGradient id="fraudGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#ef4444" />
+                <stop offset="100%" stop-color="#f87171" />
+              </linearGradient>
+            </defs>
+            <circle class="progress-ring__background" stroke="rgba(255,255,255,0.04)" stroke-width="10" fill="transparent" r="70" cx="80" cy="80"/>
+            <circle class="progress-ring__circle" id="gaugeCircle" stroke="url(#legitGradient)" stroke-width="10" fill="transparent" r="70" cx="80" cy="80" stroke-dasharray="439.82" stroke-dashoffset="439.82" stroke-linecap="round"/>
+          </svg>
+          <div class="gauge-value">
+            <div class="gauge-percentage" id="resProbPercent">0.0%</div>
+            <div class="gauge-label">Fraud Prob.</div>
+          </div>
+        </div>
+
+        <div class="confidence-wrapper">
+          <div class="confidence-header">
+            <span>Model Confidence</span>
+            <span class="confidence-value" id="resConfPercent">0.0%</span>
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="confBarFill"></div>
+          </div>
+        </div>
+
+        <div class="metrics-details">
+          <div class="metric-row">
+            <span class="metric-label">Status Category:</span>
+            <span class="metric-val" id="detailsStatus">LEGITIMATE</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">Transaction Size:</span>
+            <span class="metric-val" id="detailsAmount">$0.00</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">Classifier Core:</span>
+            <span class="metric-val">Random Forest</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Bottom Panel: History log -->
+  <div class="card history-card">
+    <div class="card-header-row">
+      <h2><span>📋</span> Recent Analyses History</h2>
+      <button class="btn-sample fraud" onclick="clearHistory()" style="background: rgba(255,255,255,0.02)">Clear Log</button>
+    </div>
+    <div class="table-container">
+      <table id="historyTable">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Amount</th>
+            <th>Prediction</th>
+            <th>Fraud Probability</th>
+            <th>Confidence</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="historyBody">
+          <!-- Populated by JS -->
+        </tbody>
+      </table>
+      <div class="empty-history" id="emptyHistory">No transactions evaluated yet in this session.</div>
+    </div>
+  </div>
+
+  <footer>
+    Anonymized PCA feature space variables <code>V1</code>–<code>V28</code> mapped from Kaggle Credit Card Fraud dataset.<br/>
+    Connection Target: <code>http://127.0.0.1:5000</code>. Ensure Flask backend is running.
+  </footer>
+
+  <script>
+    const API = 'http://127.0.0.1:5000';
+    
+    // Circle circumference for r=70 is 2 * PI * 70 = 439.82297
+    const CIRCUMFERENCE = 439.82;
+
+    // Generate fields V1 to V28
+    for (let i = 1; i <= 14; i++) {
+      document.getElementById('grid1').innerHTML +=
+        `<div class="field"><label>V${i}</label><input type="number" id="v${i}" placeholder="0.0000" step="0.0001"/></div>`;
+    }
+    for (let i = 15; i <= 28; i++) {
+      document.getElementById('grid2').innerHTML +=
+        `<div class="field"><label>V${i}</label><input type="number" id="v${i}" placeholder="0.0000" step="0.0001"/></div>`;
+    }
+
+    // Legit Row 0 from Kaggle dataset
+    const LEGIT_SAMPLE = [
+      -1.3598071, -0.0727812, 2.5363467, 1.3781552, -0.3383208,
+       0.4623878,  0.2395986, 0.0986979, 0.3637870,  0.0907942,
+      -0.5515995, -0.6178009,-0.9913898,-0.3111694,  1.4681770,
+      -0.4704005,  0.2079723, 0.0257906, 0.4030960,  0.2514121,
+      -0.0183068,  0.2778375,-0.1104839, 0.0669281,  0.1285394,
+      -0.1891148,  0.1335584,-0.0210530, 149.62
+    ];
+
+    // Fraud Row 541 from Kaggle dataset
+    const FRAUD_SAMPLE = [
+      -2.3122265,  1.9519920, -1.6098507,  3.9979056, -0.5221879,
+      -1.4265453, -2.5373873,  1.3916572, -2.7700893, -2.7722721,
+       3.2020332, -2.8999074, -0.5952219, -4.2892538,  0.3897241,
+      -1.1407472, -2.8300557, -0.0168225,  0.4169557,  0.1269106,
+       0.5172324, -0.0350494, -0.4652111,  0.3201982,  0.0445192,
+       0.1778398,  0.2611450, -0.1432759, 0.0
+    ];
+
+    let sessionHistory = [];
+
+    // On Load
+    window.addEventListener('load', () => {
+      loadHistoryFromStorage();
+    });
+
+    function fillSample(type) {
+      const arr = (type === 0) ? LEGIT_SAMPLE : FRAUD_SAMPLE;
+      for (let i = 1; i <= 28; i++) {
+        document.getElementById(`v${i}`).value = arr[i - 1].toFixed(5);
+      }
+      document.getElementById('amount').value = arr[28];
+      document.getElementById('errBox').style.display = 'none';
+    }
+
+    function clearAll() {
+      for (let i = 1; i <= 28; i++) {
+        document.getElementById(`v${i}`).value = '';
+      }
+      document.getElementById('amount').value = '';
+      document.getElementById('errBox').style.display = 'none';
+      
+      // Reset visual dashboard
+      document.getElementById('activeState').style.display = 'none';
+      document.getElementById('standbyState').style.display = 'flex';
+      
+      const circle = document.getElementById('gaugeCircle');
+      circle.style.strokeDashoffset = CIRCUMFERENCE;
+      document.getElementById('confBarFill').style.width = '0%';
+    }
+
+    async function predict() {
+      const features = [];
+      for (let i = 1; i <= 28; i++) {
+        const val = parseFloat(document.getElementById(`v${i}`).value);
+        if (isNaN(val)) {
+          showErr(`Feature component V${i} must be filled with a valid numeric decimal.`);
+          return;
+        }
+        features.push(val);
+      }
+      const amount = parseFloat(document.getElementById('amount').value);
+      if (isNaN(amount)) {
+        showErr('Transaction Amount must be filled with a valid numeric value.');
+        return;
+      }
+      features.push(amount);
+
+      document.getElementById('errBox').style.display = 'none';
+      document.getElementById('loader').style.display = 'flex';
+
+      try {
+        const res = await fetch(`${API}/predict`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ features })
+        });
+        const data = await res.json();
+        document.getElementById('loader').style.display = 'none';
+        
+        if (data.error) {
+          showErr(data.error);
+          return;
+        }
+
+        renderDashboard(data, amount);
+        addToHistory(amount, data.label, data.fraud_probability, data.confidence, features);
+
+      } catch (e) {
+        document.getElementById('loader').style.display = 'none';
+        showErr('Cannot connect to local Flask backend. Make sure the API server is active on port 5000.');
+      }
+    }
+
+    function renderDashboard(data, amount) {
+      document.getElementById('standbyState').style.display = 'none';
+      document.getElementById('activeState').style.display = 'block';
+
+      const label = document.getElementById('resLabel');
+      const circle = document.getElementById('gaugeCircle');
+      const detailsStatus = document.getElementById('detailsStatus');
+      const detailsAmount = document.getElementById('detailsAmount');
+
+      const isFraud = data.prediction === 1;
+      
+      // Update label badge
+      label.textContent = isFraud ? '🚨 Fraud Detected' : '🛡️ Legitimate';
+      label.className = `result-badge ${isFraud ? 'fraud' : 'legit'}`;
+      
+      // Update metrics details
+      detailsStatus.textContent = isFraud ? 'FRAUDULENT' : 'SECURE / LEGIT';
+      detailsStatus.style.color = isFraud ? 'var(--accent-fraud)' : 'var(--accent-legit)';
+      detailsAmount.textContent = `$${amount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+      // Update Gauge progress ring
+      const prob = data.fraud_probability; // value 0.0 to 1.0
+      document.getElementById('resProbPercent').textContent = `${(prob * 100).toFixed(1)}%`;
+      
+      // stroke-dashoffset controls fill percent. 0 is 100% fill, CIRCUMFERENCE is 0% fill.
+      const strokeOffset = CIRCUMFERENCE - (prob * CIRCUMFERENCE);
+      circle.style.strokeDashoffset = strokeOffset;
+      circle.setAttribute('stroke', isFraud ? 'url(#fraudGradient)' : 'url(#legitGradient)');
+
+      // Update linear confidence progress bar
+      const conf = data.confidence; // 0 to 100
+      document.getElementById('resConfPercent').textContent = `${conf.toFixed(1)}%`;
+      document.getElementById('confBarFill').style.width = `${conf}%`;
+    }
+
+    function showErr(msg) {
+      const b = document.getElementById('errBox');
+      b.innerHTML = '⚠️ <strong>Error:</strong> ' + msg;
+      b.style.display = 'flex';
+      b.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    /* History Management */
+    function addToHistory(amount, status, prob, conf, features) {
+      const entry = {
+        time: new Date().toLocaleTimeString(),
+        amount: amount,
+        status: status,
+        probability: prob,
+        confidence: conf,
+        features: features
+      };
+      
+      sessionHistory.unshift(entry);
+      if (sessionHistory.length > 8) {
+        sessionHistory.pop(); // keep last 8 rows
+      }
+      
+      localStorage.setItem('fraud_history', JSON.stringify(sessionHistory));
+      renderHistoryTable();
+    }
+
+    function loadHistoryFromStorage() {
+      const saved = localStorage.getItem('fraud_history');
+      if (saved) {
+        try {
+          sessionHistory = JSON.parse(saved);
+        } catch(e) {
+          sessionHistory = [];
+        }
+      }
+      renderHistoryTable();
+    }
+
+    function clearHistory() {
+      sessionHistory = [];
+      localStorage.removeItem('fraud_history');
+      renderHistoryTable();
+    }
+
+    function renderHistoryTable() {
+      const tbody = document.getElementById('historyBody');
+      const emptyDiv = document.getElementById('emptyHistory');
+      tbody.innerHTML = '';
+      
+      if (sessionHistory.length === 0) {
+        emptyDiv.style.display = 'block';
+        return;
+      }
+      
+      emptyDiv.style.display = 'none';
+      
+      sessionHistory.forEach((item, index) => {
+        const tr = document.createElement('tr');
+        tr.className = 'clickable-row';
+        tr.title = 'Click to reload transaction parameters';
+        tr.onclick = () => reloadTransaction(index);
+
+        const isFraud = item.status === 'FRAUD';
+
+        tr.innerHTML = `
+          <td>${item.time}</td>
+          <td style="font-weight: 500; color: var(--text-main);">$${item.amount.toFixed(2)}</td>
+          <td><span class="badge-tbl ${isFraud ? 'fraud' : 'legit'}">${item.status}</span></td>
+          <td>${(item.probability * 100).toFixed(1)}%</td>
+          <td>${item.confidence.toFixed(1)}%</td>
+          <td style="color: var(--primary); font-weight: 600; font-size: 0.75rem;">RELOAD ↺</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function reloadTransaction(index) {
+      const item = sessionHistory[index];
+      if (!item) return;
+
+      for (let i = 1; i <= 28; i++) {
+        document.getElementById(`v${i}`).value = item.features[i - 1].toFixed(5);
+      }
+      document.getElementById('amount').value = item.amount;
+      document.getElementById('errBox').style.display = 'none';
+
+      // Auto trigger visual updates for loaded historical prediction response
+      const mockResponse = {
+        prediction: item.status === 'FRAUD' ? 1 : 0,
+        label: item.status,
+        fraud_probability: item.probability,
+        confidence: item.confidence
+      };
+      renderDashboard(mockResponse, item.amount);
+    }
+  </script>
+</body>
+</html>

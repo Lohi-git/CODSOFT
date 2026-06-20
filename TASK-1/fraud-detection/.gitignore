@@ -1,0 +1,20 @@
+# dataset (too large for github)
+creditcard.csv
+
+# model binaries
+models/*.pkl
+
+# python
+__pycache__/
+*.pyc
+*.pyo
+.env
+venv/
+env/
+
+# jupyter checkpoints
+.ipynb_checkpoints/
+
+# os
+.DS_Store
+Thumbs.db
