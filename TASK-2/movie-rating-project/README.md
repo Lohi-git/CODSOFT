@@ -1,50 +1,80 @@
-# Movie Rating Prediction 🎬
+# Sales Prediction Using Python 📈
 
-Task 2 of the CodSoft Data Science Internship.
+Task 4 of the CodSoft Data Science Internship.
 
-Predicting a movie's rating based on stuff like genre, director, actors, duration and votes, using regression.
+Predicting product Sales based on advertising spend across TV, Radio and Newspaper.
 
-## What's in here
+## Structure
 
 ```
-movie-rating-project/
+sales-prediction-project/
 ├── data/
-│   └── movies.csv              <- IMDb India movies dataset (add this yourself, see below)
+│   └── advertising.csv     <- add this yourself, see below
 ├── notebook/
-│   └── movie_rating_prediction.ipynb
+│   └── sales_prediction.ipynb
 ├── requirements.txt
 └── README.md
 ```
 
 ## Dataset
 
-Using the IMDb Movies India dataset linked in the task PDF. Download it and drop it in `data/movies.csv` before running the notebook (not committing the raw csv to the repo since it's not mine to redistribute).
+Using the Advertising dataset linked in the task PDF (TV / Radio / Newspaper spend vs Sales). Download it and place it at `data/advertising.csv`. Not committing the raw csv since it's not originally mine.
 
 ## How to run
 
 ```bash
 pip install -r requirements.txt
-jupyter notebook notebook/movie_rating_prediction.ipynb
+jupyter notebook notebook/sales_prediction.ipynb
 ```
 
-## Approach (quick summary)
+or run it headless from terminal:
 
-- Cleaned up Year/Duration/Votes columns (had junk like brackets, "min" text, commas in numbers)
-- Dropped rows with no Rating since that's the target
-- Genre column got split + manually one-hot encoded (movies can have multiple genres in one cell)
-- Director and Actor columns target-encoded (mapped to avg rating, since one-hot would've made way too many columns)
-- Trained Linear Regression as baseline, then Random Forest
-- Evaluated using RMSE + R², checked residual plot to see if predictions made sense
+```bash
+jupyter nbconvert --to notebook --execute notebook/sales_prediction.ipynb --output sales_prediction_output.ipynb
+```
 
-## Results
+### Windows troubleshooting
 
-Random Forest came out ahead of plain linear regression. Full numbers + plots are in the notebook output cells once you run it.
+If `pip install` fails with an `OSError` about a long file path (usually pointing into a `jupyterlab/galata` folder), Windows' default 260-character path limit is the culprit. Two fixes:
 
-## Notes / things I'd improve later
+**Fix 1 - enable long paths (one-time, needs a restart)**
 
-- Target encoding here is done directly on the full data which leaks a bit of target info into the features — a cleaner version would use K-fold encoding
-- Didn't do any hyperparameter tuning, just used reasonable defaults
-- Could try XGBoost/LightGBM for a likely bump in performance
+Run in PowerShell as Administrator:
+```powershell
+New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
+```
+Restart your PC, then re-run `pip install -r requirements.txt`.
+
+**Fix 2 - skip JupyterLab, use classic Notebook instead (faster, no restart)**
+```bash
+pip uninstall jupyterlab -y
+pip install notebook
+jupyter notebook notebook/sales_prediction.ipynb
+```
+
+If `jupyter` still isn't recognized as a command after installing, run it through Python directly instead:
+```bash
+python -m notebook notebook/sales_prediction.ipynb
+```
+
+## Approach
+
+- Quick null check + dropped a leftover index column
+- EDA: histograms per channel, scatter plots vs Sales, and a correlation heatmap
+- Train/test split (80/20)
+- Trained Linear Regression as a baseline, then Random Forest Regressor
+- Compared both using RMSE and R²
+- Checked actual vs predicted plot + RF feature importances to confirm which channel matters most
+
+## Key finding
+
+TV ad spend has by far the strongest relationship with Sales. Radio has a moderate effect. Newspaper barely moves the needle — both the correlation heatmap and the trained model's feature importance agree on this.
+
+## Possible improvements
+
+- Try interaction terms (e.g. TV × Radio) since channels might work better combined
+- Hyperparameter tuning on the Random Forest
+- Try Gradient Boosting for comparison
 
 ---
-Built as part of #codsoft #internship #datascience
+#codsoft #internship #datascience
