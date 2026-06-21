@@ -153,7 +153,7 @@ Both the correlation heatmap **and** the Random Forest's feature importance scor
 
 ### 1. Clone the repo
 ```bash
-git clone https://github.com/<your-username>/CODSOFT.git
+git clone https://github.com/Lohi-git/CODSOFT.git
 cd CODSOFT/sales-prediction-project
 ```
 
@@ -259,13 +259,19 @@ Things to look for when you run the notebook:
 - [ ] Try Gradient Boosting / XGBoost for comparison
 - [ ] K-fold cross-validation instead of a single train/test split
 
+---
 
+## 📄 License
+
+MIT License — free to use and modify.
+
+---
 
 ## 👨‍💻 Author
 
 <div align="center">
 
-### Your Name
+### M Lohitth
 
 *CodSoft Data Science Intern*
 
@@ -278,7 +284,7 @@ Things to look for when you run the notebook:
 
 <div align="center">
 
-**CodSoft Data Science Internship — Task 2 ✦**
+**CodSoft Data Science Internship — Task 4 ✦**
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=22577A&height=100&section=footer" width="100%"/>
 
