@@ -259,13 +259,7 @@ Things to look for when you run the notebook:
 - [ ] Try Gradient Boosting / XGBoost for comparison
 - [ ] K-fold cross-validation instead of a single train/test split
 
----
 
-## 📄 License
-
-MIT License — free to use and modify.
-
----
 
 ## 👨‍💻 Author
 
@@ -275,8 +269,8 @@ MIT License — free to use and modify.
 
 *CodSoft Data Science Intern*
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/your-profile)
-[![GitHub](https://img.shields.io/badge/GitHub-Follow-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/your-username)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/m-lohitth-1619b7378/)
+[![GitHub](https://img.shields.io/badge/GitHub-Follow-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Lohi-git)
 
 </div>
 
@@ -284,7 +278,7 @@ MIT License — free to use and modify.
 
 <div align="center">
 
-**CodSoft Data Science Internship — Task 4 ✦**
+**CodSoft Data Science Internship — Task 2 ✦**
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=22577A&height=100&section=footer" width="100%"/>
 
