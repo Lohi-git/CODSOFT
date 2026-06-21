@@ -494,7 +494,7 @@ MIT License — free to use and modify.
 
 <div align="center">
 
-**All 5 tasks completed — CodSoft Data Science Internship ✦**
+**All 3 tasks completed — CodSoft Data Science Internship ✦**
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=22577A&height=100&section=footer" width="100%"/>
 
