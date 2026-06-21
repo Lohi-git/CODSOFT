@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=22577A&height=200&section=header&text=CODSOFT&fontSize=80&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Data%20Science%20Internship%20%7C%20All%205%20Tasks%20Completed&descAlignY=60&descAlign=50" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&color=22577A&height=200&section=header&text=CODSOFT&fontSize=80&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Data%20Science%20Internship%20%7C%20Tasks%202%2C%204%20%26%205%20Completed&descAlignY=60&descAlign=50" width="100%"/>
 
 <br/>
 
@@ -10,7 +10,7 @@
 ![pandas](https://img.shields.io/badge/pandas-Data-150458?style=for-the-badge&logo=pandas&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-Web%20App-black?style=for-the-badge&logo=flask&logoColor=white)
 ![Jupyter](https://img.shields.io/badge/Jupyter-Notebooks-F37626?style=for-the-badge&logo=jupyter&logoColor=white)
-![Tasks](https://img.shields.io/badge/Tasks-5%2F5%20Completed-22c55e?style=for-the-badge)
+![Tasks](https://img.shields.io/badge/Tasks-3%2F5%20Completed-22c55e?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge)
 
 <br/>
@@ -31,84 +31,11 @@
 
 | # | Task | Model Used | Key Metric | Status |
 |---|---|---|---|---|
-| 1 | **Titanic Survival Prediction** | Random Forest Classifier | Accuracy ~83% | ✅ Completed |
 | 2 | **Movie Rating Prediction** | Random Forest Regressor | R² ~0.88 | ✅ Completed |
-| 3 | **Iris Flower Classification** | Random Forest / KNN / SVM | Accuracy ~98% | ✅ Completed |
 | 4 | **Sales Prediction** | Random Forest Regressor | R² ~0.97 | ✅ Completed |
 | 5 | **Credit Card Fraud Detection** | Random Forest + SMOTE | F1 (Fraud) ~0.89 | ✅ Completed |
 
 </div>
-
----
-
-## ✅ Task 1 — Titanic Survival Prediction
-
-<table>
-<tr>
-<td width="50%">
-
-### Features
-- 🔍 **Full EDA** — survival rate by gender, class, age group
-- 🧹 **Data Cleaning** — age imputation, cabin drop, fare outlier handling
-- 🔧 **Feature Engineering** — FamilySize, IsAlone, Title extraction from Name
-- 🤖 **Random Forest Classifier** — with cross-validation
-- 📊 **Confusion matrix + classification report**
-- 📈 **Feature importance bar chart**
-- 🌐 **Flask web app** — predict survival for custom passenger input
-
-</td>
-<td width="50%">
-
-### Pipeline
-```mermaid
-flowchart LR
-  A[Load train.csv] --> B[EDA\nsurvival by gender · class · age]
-  B --> C[Clean Data\nimpute age · encode sex + embarked]
-  C --> D[Feature Engineering\nFamilySize · IsAlone · Title]
-  D --> E[Train/Test Split\n80 / 20]
-  E --> F[Random Forest\nClassifier]
-  F --> G[Evaluate\nAccuracy · F1 · Confusion Matrix]
-  G --> H[Flask App\npredict survival]
-```
-
-### Architecture
-```
-task1-titanic/
-├── data/
-│   └── train.csv
-├── models/
-│   ├── rf_model.pkl
-│   └── scaler.pkl
-├── notebooks/
-│   └── titanic_eda.ipynb
-├── static/plots/
-├── templates/index.html
-├── app.py
-├── train.py
-└── requirements.txt
-```
-
-</td>
-</tr>
-</table>
-
-### Key Findings
-
-| Feature | Importance | Insight |
-|:---:|:---:|---|
-| 👩 Sex | Highest | Females had ~74% survival vs ~19% for males |
-| 🎫 Pclass | High | 1st class passengers survived at nearly 3× the rate of 3rd class |
-| 💰 Fare | Medium | Higher fare = higher class = higher survival |
-| 👤 Title | Medium | "Mrs" / "Miss" encoded much of the gender signal |
-| 👨‍👩‍👧 FamilySize | Low-Medium | Solo travelers and very large families survived less |
-
-### Run Task 1
-```bash
-cd task1-titanic
-pip install -r requirements.txt
-python train.py       # trains model, saves plots
-python app.py         # launches Flask app at localhost:5000
-```
 
 ---
 
@@ -182,82 +109,6 @@ task2-movie-rating/
 cd task2-movie-rating
 pip install -r requirements.txt
 python train.py       # trains model, saves plots to outputs/
-```
-
----
-
-## ✅ Task 3 — Iris Flower Classification
-
-<table>
-<tr>
-<td width="50%">
-
-### Features
-- 🌸 **EDA** — pairplot, boxplots, violin plots per species
-- 🌡️ **Correlation heatmap** — petal features dominate separation
-- 🤖 **3 Models** — Random Forest, KNN, SVM (kernel=rbf)
-- 📊 **Confusion matrices** — all 3 models side by side
-- 📈 **Decision boundary visualization** — 2D PCA projection
-- 🔍 **Classification report** — precision, recall, F1 per species
-- 🌐 **Flask app** — predict species from sepal/petal measurements
-
-</td>
-<td width="50%">
-
-### Pipeline
-```mermaid
-flowchart LR
-  A[Load iris.csv] --> B[EDA\npairplot · boxplots · heatmap]
-  B --> C[Train/Test Split\n80 / 20 stratified]
-  C --> D[Random Forest\n+ KNN + SVM]
-  D --> E[Evaluate\nAccuracy · F1 · Confusion Matrix]
-  E --> F[Decision Boundary\n2D PCA plot]
-  F --> G[Flask App\npredict species]
-```
-
-### Architecture
-```
-task3-iris/
-├── data/
-│   └── iris.csv
-├── models/
-│   ├── rf_model.pkl
-│   ├── knn_model.pkl
-│   ├── svm_model.pkl
-│   └── scaler.pkl
-├── notebooks/
-│   └── iris_classification.ipynb
-├── outputs/
-│   ├── pairplot.png
-│   ├── correlation_heatmap.png
-│   ├── confusion_matrices.png
-│   └── decision_boundary.png
-├── templates/index.html
-├── app.py
-├── train.py
-└── requirements.txt
-```
-
-</td>
-</tr>
-</table>
-
-### Key Findings
-
-| Model | Accuracy | Notes |
-|:---:|:---:|---|
-| Random Forest | ~98% | Best overall, handles petal overlap well |
-| SVM (rbf) | ~97% | Very close, great on small datasets |
-| KNN (k=5) | ~96% | Simple but effective, sensitive to scale |
-
-> Setosa is perfectly separable from the other two species. Versicolor and Virginica overlap slightly — petal measurements separate them better than sepal measurements.
-
-### Run Task 3
-```bash
-cd task3-iris
-pip install -r requirements.txt
-python train.py       # trains all 3 models
-python app.py         # launches Flask app at localhost:5000
 ```
 
 ---
@@ -442,9 +293,7 @@ pip install -r requirements.txt
 ### Datasets
 | Task | Dataset | Source |
 |---|---|---|
-| Task 1 | `train.csv` | [Kaggle Titanic](https://www.kaggle.com/c/titanic) |
 | Task 2 | `IMDb Movies India.csv` | CodSoft task page / Kaggle |
-| Task 3 | `iris.csv` | Built-in sklearn / UCI |
 | Task 4 | `advertising.csv` | CodSoft task page |
 | Task 5 | `creditcard.csv` | [Kaggle Credit Card Fraud](https://www.kaggle.com/mlg-ulb/creditcardfraud) |
 
@@ -464,7 +313,7 @@ Place each dataset in the respective `data/` folder before running.
 | **Modeling** | scikit-learn | All tasks |
 | **Imbalance** | imbalanced-learn (SMOTE) | Task 5 |
 | **Notebook** | Jupyter | All tasks |
-| **Web** | Flask, HTML/CSS | Tasks 1, 3, 4, 5 |
+| **Web** | Flask, HTML/CSS | Tasks 4, 5 |
 | **Persistence** | joblib | All tasks |
 
 </div>
@@ -494,7 +343,7 @@ MIT License — free to use and modify.
 
 <div align="center">
 
-**All 3 tasks completed — CodSoft Data Science Internship ✦**
+**Tasks 2, 4 & 5 completed — CodSoft Data Science Internship ✦**
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=22577A&height=100&section=footer" width="100%"/>
 
